@@ -1,38 +1,57 @@
-const dvd = document.getElementById('dvd');
-let x = 0, y = 0;
-let xSpeed = 2, ySpeed = 2; // Movement speed
+import streamlit as st
+import streamlit.components.v1 as components
 
-function animate() {
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
-  const logoWidth = dvd.offsetWidth;
-  const logoHeight = dvd.offsetHeight;
+st.set_page_config(page_title="DVD Bounce", layout="centered")
 
-  // Update position
-  x += xSpeed;
-  y += ySpeed;
+st.title("📀 Streamlit DVD Bounce")
+st.write("A smooth animation using injected JavaScript.")
 
-  // Collision detection: Left/Right
-  if (x + logoWidth >= screenWidth || x <= 0) {
-    xSpeed *= -1;
-    changeColor();
-  }
+# HTML/JS for the animation
+dvd_html = """
+<div id="container" style="width: 100%; height: 400px; background: black; position: relative; overflow: hidden; border-radius: 10px;">
+    <div id="logo" style="width: 80px; height: 40px; background: #00ff00; position: absolute; display: flex; align-items: center; justify-content: center; color: white; font-family: sans-serif; font-weight: bold; border-radius: 4px;">
+        DVD
+    </div>
+</div>
 
-  // Collision detection: Top/Bottom
-  if (y + logoHeight >= screenHeight || y <= 0) {
-    ySpeed *= -1;
-    changeColor();
-  }
+<script>
+    const container = document.getElementById('container');
+    const logo = document.getElementById('logo');
+    
+    let x = 0;
+    let y = 0;
+    let xSpeed = 2;
+    let ySpeed = 2;
 
-  dvd.style.left = x + 'px';
-  dvd.style.top = y + 'px';
+    function animate() {
+        const cWidth = container.clientWidth;
+        const cHeight = container.clientHeight;
+        const lWidth = logo.offsetWidth;
+        const lHeight = logo.offsetHeight;
 
-  requestAnimationFrame(animate);
-}
+        x += xSpeed;
+        y += ySpeed;
 
-function changeColor() {
-  const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-  dvd.style.backgroundColor = randomColor;
-}
+        if (x + lWidth >= cWidth || x <= 0) {
+            xSpeed *= -1;
+            logo.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        }
+        if (y + lHeight >= cHeight || y <= 0) {
+            ySpeed *= -1;
+            logo.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        }
 
-animate();
+        logo.style.left = x + 'px';
+        logo.style.top = y + 'px';
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
+"""
+
+# Render the component
+components.html(dvd_html, height=450)
+
+st.success("The logo changes color every time it hits a wall!")
+
